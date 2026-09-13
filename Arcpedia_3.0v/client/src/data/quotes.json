@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "text": "The only way to do great work is to love what you do.",
+        "author": "Steve Jobs",
+        "category": "hustle"
+    },
+    {
+        "id": 2,
+        "text": "Rest is not idleness, and to lie sometimes on the grass under trees on a summer's day, listening to the murmur of the water, or watching the clouds float across the sky, is by no means a waste of time.",
+        "author": "John Lubbock",
+        "category": "calm"
+    },
+    {
+        "id": 3,
+        "text": "It does not matter how slowly you go as long as you do not stop.",
+        "author": "Confucius",
+        "category": "hustle"
+    },
+    {
+        "id": 4,
+        "text": "Almost everything will work again if you unplug it for a few minutes, including you.",
+        "author": "Anne Lamott",
+        "category": "calm"
+    }
+]

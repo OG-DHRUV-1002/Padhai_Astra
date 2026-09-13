@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "date": "2025-10-15",
+        "title": "Survived Midterms",
+        "description": "Passed Advanced Calc and Quantum Physics in the same week.",
+        "type": "milestone",
+        "icon": "Trophy"
+    },
+    {
+        "id": 2,
+        "date": "2025-11-20",
+        "title": "Hackathon Winner",
+        "description": "First place in the 'AI for Good' category.",
+        "type": "award",
+        "icon": "Award"
+    },
+    {
+        "id": 3,
+        "date": "2025-12-05",
+        "title": "Completed 'Neural Networks' Path",
+        "description": "Finished all 12 modules with 95% accuracy.",
+        "type": "learning",
+        "icon": "BookOpen"
+    }
+]

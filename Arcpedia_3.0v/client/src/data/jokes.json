@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1,
+        "text": "Why do programmers prefer dark mode? Because light attracts bugs.",
+        "major": "Computer Science"
+    },
+    {
+        "id": 2,
+        "text": "A SQL query walks into a bar, walks up to two tables and asks... 'Can I join you?'",
+        "major": "Computer Science"
+    },
+    {
+        "id": 3,
+        "text": "Why was the biology student looking at the cell phone? They wanted to take a selfie.",
+        "major": "Biology"
+    },
+    {
+        "id": 4,
+        "text": "Parallel lines have so much in common. It’s a shame they’ll never meet.",
+        "major": "Mathematics"
+    }
+]

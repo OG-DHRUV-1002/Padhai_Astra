@@ -1,0 +1,187 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ========================================
+       ARCPEDIA - ELECTRIC INDIGO LIGHT MODE
+       ======================================== */
+    --background: 220 20% 97%;
+    --foreground: 224 71% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 224 71% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71% 10%;
+
+    --primary: 239 84% 67%;
+    /* Electric Indigo */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 20% 94%;
+    --secondary-foreground: 224 71% 10%;
+
+    --muted: 220 14% 92%;
+    --muted-foreground: 220 9% 46%;
+
+    --accent: 174 72% 46%;
+    /* Teal accent */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 87%;
+    --input: 220 13% 87%;
+    --ring: 239 84% 67%;
+
+    --radius: 1rem;
+
+    --chart-1: 239 84% 67%;
+    --chart-2: 174 72% 46%;
+    --chart-3: 326 78% 60%;
+    --chart-4: 45 93% 58%;
+    --chart-5: 142 71% 45%;
+
+    /* Sidebar Light */
+    --sidebar-background: 224 71% 10%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 239 84% 67%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 239 84% 80%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 224 50% 18%;
+    --sidebar-ring: 239 84% 67%;
+  }
+
+  .dark {
+    /* ========================================
+       ARCPEDIA - ELECTRIC INDIGO DARK MODE
+       ======================================== */
+    --background: 224 71% 4%;
+    /* Deep void black */
+    --foreground: 210 40% 98%;
+    /* Bright white text */
+
+    --card: 224 50% 7%;
+    /* Slightly lifted card */
+    --card-foreground: 210 40% 98%;
+
+    --popover: 224 50% 7%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 239 84% 67%;
+    /* Electric Indigo - SAME in dark */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 224 50% 13%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 224 50% 13%;
+    --muted-foreground: 218 15% 55%;
+
+    --accent: 174 72% 46%;
+    /* Teal - pops in dark */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 224 50% 14%;
+    --input: 224 50% 14%;
+    --ring: 239 84% 67%;
+
+    /* Neon Charts */
+    --chart-1: 239 84% 67%;
+    /* Indigo */
+    --chart-2: 174 72% 56%;
+    /* Teal */
+    --chart-3: 326 78% 65%;
+    /* Pink */
+    --chart-4: 45 100% 60%;
+    /* Gold */
+    --chart-5: 142 80% 50%;
+    /* Green */
+
+    /* Sidebar Dark */
+    --sidebar-background: 224 71% 4%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 239 84% 67%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 224 50% 13%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 224 50% 14%;
+    --sidebar-ring: 239 84% 67%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-white;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Scrollbar Styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary/20 rounded-full hover:bg-primary/40 transition-colors;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/70 dark:bg-white/10 backdrop-blur-xl border border-slate-200/50 dark:border-white/20 shadow-xl;
+  }
+
+  .glass-dark {
+    @apply bg-slate-100/50 dark:bg-black/40 backdrop-blur-2xl border border-slate-200/50 dark:border-white/10 shadow-2xl;
+  }
+
+  .glass-card {
+    @apply bg-white/80 dark:bg-white/[0.03] backdrop-blur-lg border border-slate-200/50 dark:border-white/10 hover:border-indigo-500/40 transition-all duration-300 hover:bg-white dark:hover:bg-white/[0.06] hover:shadow-lg hover:shadow-indigo-500/10;
+  }
+
+  .font-headline {
+    font-family: var(--font-outfit), system-ui, sans-serif;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-violet-400 to-cyan-400;
+  }
+
+  .mask-grad-right {
+    mask-image: linear-gradient(to right, black 80%, transparent 100%);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Glow utilities for prominent elements */
+  .glow-primary {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.3), 0 0 60px hsl(var(--primary) / 0.1);
+  }
+
+  .glow-accent {
+    box-shadow: 0 0 20px hsl(var(--accent) / 0.3), 0 0 60px hsl(var(--accent) / 0.1);
+  }
+}/* Added */ 
