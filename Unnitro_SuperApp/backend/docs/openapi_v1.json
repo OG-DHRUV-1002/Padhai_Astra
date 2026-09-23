@@ -1,0 +1,699 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Unnitro SuperApp — Pod Beta Gateway",
+    "description": "Unified backend gateway for Unnitro SuperApp providing the 3D A* navigation engine, GPS telemetry dead-zone inference, and AI microservice proxy.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/v1/navigation/route": {
+      "post": {
+        "tags": [
+          "Navigation Engine"
+        ],
+        "summary": "Compute optimal 3D A* route across campus",
+        "description": "Calculate the shortest multi-floor path between origin and destination.\n\nSupports dynamic wheelchair accessibility constraints, Euclidean 3D\ndistance evaluation, vertical penalty weighing, and turn-by-turn instruction\nsynthesis.",
+        "operationId": "compute_route_api_v1_navigation_route_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PathRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Optimized waypoint sequence with turn-by-turn guidance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PathResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/navigation/nodes": {
+      "get": {
+        "tags": [
+          "Navigation Engine"
+        ],
+        "summary": "List all registered navigable campus nodes",
+        "description": "Return metadata for all navigable points registered in the active\ncampus graph topology for frontend discovery and visual rendering.",
+        "operationId": "list_nodes_api_v1_navigation_nodes_get",
+        "responses": {
+          "200": {
+            "description": "List of node descriptors with building and floor metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/NodeMetadata"
+                  },
+                  "type": "array",
+                  "title": "Response List Nodes Api V1 Navigation Nodes Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/telemetry/heartbeat": {
+      "post": {
+        "tags": [
+          "Telemetry & Dead-Zone Engine"
+        ],
+        "summary": "Ingest client GPS/BLE telemetry heartbeat",
+        "description": "Process an incoming client telemetry heartbeat in < 1 ms.\n\nUpdates internal device tracking state and entrance geofence status\nwithout triggering blocking disk or external database I/O.",
+        "operationId": "ingest_heartbeat_api_v1_telemetry_heartbeat_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HeartbeatPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Fast acknowledgement of telemetry packet recording",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HeartbeatResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/telemetry/occupancy": {
+      "get": {
+        "tags": [
+          "Telemetry & Dead-Zone Engine"
+        ],
+        "summary": "Retrieve real-time canteen occupancy snapshot",
+        "description": "Return the current canteen occupancy state derived from in-memory\ndead-zone tracking and dwell-time inference.",
+        "operationId": "get_canteen_occupancy_api_v1_telemetry_occupancy_get",
+        "responses": {
+          "200": {
+            "description": "Active occupant count, capacity percentage, and rush status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OccupancySnapshot"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/telemetry/sweep": {
+      "post": {
+        "tags": [
+          "Telemetry & Dead-Zone Engine"
+        ],
+        "summary": "Trigger dead-zone transition sweep",
+        "description": "Perform a dead-zone sweep over tracked devices.\n\nPromotes devices silent at the entrance geofence beyond the dead-zone\ntimeout threshold into confirmed indoor occupants. Intended for background\nworkers and test harnesses.",
+        "operationId": "trigger_deadzone_sweep_api_v1_telemetry_sweep_post",
+        "responses": {
+          "200": {
+            "description": "Summary of devices promoted to indoor status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SweepResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ai/query": {
+      "post": {
+        "tags": [
+          "Pod Gamma AI Engine"
+        ],
+        "summary": "Forward a natural-language query to Pod Gamma's AI engine",
+        "description": "Accept a user prompt, relay it to the downstream RAG microservice,\nand return the result.  On timeout or connection failure the endpoint\nreturns a deterministic fallback response rather than raising an HTTP\nerror.",
+        "operationId": "ai_query_api_v1_ai_query_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AIQueryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "AI-generated answer (or a graceful fallback)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AIQueryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Health Check",
+        "description": "Lightweight readiness probe for orchestrators and load balancers.",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Health Check Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AIQueryRequest": {
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "maxLength": 4096,
+            "minLength": 1,
+            "title": "Prompt",
+            "description": "User's natural-language query"
+          },
+          "user_uid": {
+            "type": "string",
+            "title": "User Uid",
+            "description": "Firebase UID of the requesting user"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRole",
+            "description": "Caller's platform role",
+            "default": "student"
+          },
+          "context_flags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Context Flags",
+            "description": "Optional key-value context hints for the AI engine"
+          }
+        },
+        "type": "object",
+        "required": [
+          "prompt",
+          "user_uid"
+        ],
+        "title": "AIQueryRequest",
+        "description": "Inbound payload for the AI query proxy."
+      },
+      "AIQueryResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Outcome indicator: 'ok', 'fallback_timeout', or 'service_unreachable'"
+          },
+          "answer": {
+            "type": "string",
+            "title": "Answer",
+            "description": "AI-generated answer text"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "description": "Model that produced the answer",
+            "default": "unknown"
+          },
+          "is_fallback": {
+            "type": "boolean",
+            "title": "Is Fallback",
+            "description": "True when the answer was generated by the local fallback path",
+            "default": false
+          },
+          "tools_used": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tools Used",
+            "description": "List of tool identifiers invoked during generation"
+          },
+          "latency_ms": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Latency Ms",
+            "description": "Round-trip time to the downstream AI service in milliseconds",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "answer"
+        ],
+        "title": "AIQueryResponse",
+        "description": "Response envelope returned by the AI proxy."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HeartbeatPayload": {
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Uid",
+            "description": "Unique client/device identifier"
+          },
+          "inside_entrance_polygon": {
+            "type": "boolean",
+            "title": "Inside Entrance Polygon",
+            "description": "True if device GPS falls inside the canteen entrance polygon"
+          },
+          "rssi_dbm": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rssi Dbm",
+            "description": "Received signal strength indicator in dBm"
+          }
+        },
+        "type": "object",
+        "required": [
+          "uid",
+          "inside_entrance_polygon"
+        ],
+        "title": "HeartbeatPayload",
+        "description": "Inbound telemetry ping from client mobile/web runtime."
+      },
+      "HeartbeatResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Ingestion status",
+            "default": "recorded"
+          },
+          "uid": {
+            "type": "string",
+            "title": "Uid",
+            "description": "Echoed device identifier"
+          },
+          "server_time": {
+            "type": "number",
+            "title": "Server Time",
+            "description": "Unix epoch timestamp on server"
+          }
+        },
+        "type": "object",
+        "required": [
+          "uid",
+          "server_time"
+        ],
+        "title": "HeartbeatResponse",
+        "description": "Ultra-low latency acknowledgement for client heartbeat."
+      },
+      "NodeMetadata": {
+        "properties": {
+          "node_id": {
+            "type": "string",
+            "title": "Node Id",
+            "description": "Unique graph node identifier"
+          },
+          "building": {
+            "type": "string",
+            "title": "Building",
+            "description": "Building identifier (e.g. SSBAS, Canteen)"
+          },
+          "floor": {
+            "type": "integer",
+            "title": "Floor",
+            "description": "Logical floor number (0-indexed)"
+          },
+          "x": {
+            "type": "number",
+            "title": "X",
+            "description": "Local horizontal X coordinate in metres"
+          },
+          "y": {
+            "type": "number",
+            "title": "Y",
+            "description": "Local horizontal Y coordinate in metres"
+          },
+          "z": {
+            "type": "number",
+            "title": "Z",
+            "description": "Local vertical Z coordinate in metres"
+          },
+          "is_accessible": {
+            "type": "boolean",
+            "title": "Is Accessible",
+            "description": "Wheelchair accessible point",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "node_id",
+          "building",
+          "floor",
+          "x",
+          "y",
+          "z"
+        ],
+        "title": "NodeMetadata",
+        "description": "Graph node descriptor for frontend map discovery."
+      },
+      "OccupancySnapshot": {
+        "properties": {
+          "current_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Current Count",
+            "description": "Active indoor device count"
+          },
+          "capacity": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Capacity",
+            "description": "Maximum canteen capacity",
+            "default": 250
+          },
+          "capacity_percent": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Capacity Percent",
+            "description": "Occupancy as a percentage of capacity"
+          },
+          "rush_status": {
+            "$ref": "#/components/schemas/RushLevel",
+            "description": "Qualitative rush classification"
+          }
+        },
+        "type": "object",
+        "required": [
+          "current_count",
+          "capacity_percent",
+          "rush_status"
+        ],
+        "title": "OccupancySnapshot",
+        "description": "Point-in-time canteen occupancy report."
+      },
+      "PathRequest": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "title": "Origin",
+            "description": "Starting graph node ID"
+          },
+          "destination": {
+            "type": "string",
+            "title": "Destination",
+            "description": "Target graph node ID"
+          },
+          "accessible_only": {
+            "type": "boolean",
+            "title": "Accessible Only",
+            "description": "If true, exclude stairs and inaccessible edges",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "origin",
+          "destination"
+        ],
+        "title": "PathRequest",
+        "description": "Inbound request specifying origin and destination for route computation."
+      },
+      "PathResponse": {
+        "properties": {
+          "total_distance_meters": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Total Distance Meters",
+            "description": "Total path length in metres (rounded to 2 decimals)"
+          },
+          "estimated_duration_seconds": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Estimated Duration Seconds",
+            "description": "Walking time at 1.3 m/s average velocity"
+          },
+          "node_sequence": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Node Sequence",
+            "description": "Ordered list of graph node IDs forming the path"
+          },
+          "waypoints": {
+            "items": {
+              "$ref": "#/components/schemas/WaypointStep"
+            },
+            "type": "array",
+            "title": "Waypoints",
+            "description": "Turn-by-turn navigation instructions with coordinates"
+          },
+          "accessible_route": {
+            "type": "boolean",
+            "title": "Accessible Route",
+            "description": "Whether this route was computed with accessibility constraints",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_distance_meters",
+          "estimated_duration_seconds",
+          "node_sequence",
+          "waypoints"
+        ],
+        "title": "PathResponse",
+        "description": "Complete A* route result returned to the caller."
+      },
+      "RushLevel": {
+        "type": "string",
+        "enum": [
+          "LOW",
+          "MODERATE",
+          "PEAK"
+        ],
+        "title": "RushLevel",
+        "description": "Qualitative rush classification for occupancy reporting."
+      },
+      "SweepResponse": {
+        "properties": {
+          "promoted_uids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Promoted Uids",
+            "description": "List of UIDs transitioned to indoor"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Count",
+            "description": "Total number of transitions applied"
+          },
+          "server_time": {
+            "type": "number",
+            "title": "Server Time",
+            "description": "Unix epoch timestamp of sweep"
+          }
+        },
+        "type": "object",
+        "required": [
+          "promoted_uids",
+          "count",
+          "server_time"
+        ],
+        "title": "SweepResponse",
+        "description": "Response returned when triggering dead-zone transition sweeps."
+      },
+      "UserRole": {
+        "type": "string",
+        "enum": [
+          "student",
+          "faculty",
+          "admin"
+        ],
+        "title": "UserRole",
+        "description": "Roles recognised by the Unnitro platform."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "WaypointStep": {
+        "properties": {
+          "node_id": {
+            "type": "string",
+            "title": "Node Id",
+            "description": "Graph node identifier"
+          },
+          "x": {
+            "type": "number",
+            "title": "X"
+          },
+          "y": {
+            "type": "number",
+            "title": "Y"
+          },
+          "z": {
+            "type": "number",
+            "title": "Z"
+          },
+          "floor": {
+            "type": "integer",
+            "title": "Floor",
+            "description": "Logical floor number (0-indexed)"
+          },
+          "building": {
+            "type": "string",
+            "title": "Building",
+            "description": "Building identifier"
+          },
+          "instruction": {
+            "type": "string",
+            "title": "Instruction",
+            "description": "Human-readable navigation instruction, e.g. 'Turn left', 'Take elevator to Floor 3'"
+          },
+          "cumulative_distance_m": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Cumulative Distance M",
+            "description": "Distance from origin to this waypoint in metres"
+          }
+        },
+        "type": "object",
+        "required": [
+          "node_id",
+          "x",
+          "y",
+          "z",
+          "floor",
+          "building",
+          "instruction",
+          "cumulative_distance_m"
+        ],
+        "title": "WaypointStep",
+        "description": "A single turn-by-turn instruction along the computed path."
+      }
+    }
+  }
+}
